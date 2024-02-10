@@ -46,17 +46,17 @@ WHERE review_count between 500 and 1000;
 
 
 --6a. Show the average star rating for companies in each state. The output should show the state as state and the average rating for the state as avg_rating.
-SELECT company, location as state, avg(star_rating) as avg_rating
+SELECT location as state, avg(star_rating) as avg_rating
 from data_analyst_jobs
-GROUP BY company, location;
+GROUP BY location;
 
 --6b. Which state shows the highest average rating?
-SELECT company, location as state, avg(star_rating) as avg_rating
+SELECT location as state, avg(star_rating) as avg_rating
 from data_analyst_jobs
 WHERE star_rating IS NOT NULL
-GROUP BY company, location
+GROUP BY location
 ORDER BY avg_rating DESC;
---ANSWER: The state with the highest average rating is CA(California).
+--ANSWER: The state with the highest average rating is NE(NEBRASKA).
 
 
 
@@ -70,26 +70,28 @@ FROM data_analyst_jobs;
 --8. How many unique job titles are there for California companies?
 SELECT count(distinct title) as unique_job_titles
 FROM data_analyst_jobs
-WHERE location = 'CA';
+--WHERE location = 'CA'; -->NOTE: it's recommended to use "IN" instead of "=". 
+WHERE LOCATION IN ('CA');
 --ANSWER: There are 230 unique job titles for California companies.
 
 
 
 --9. Find the name of each company and its average star rating for all companies that have more than 5000 reviews across all locations. How many companies are there with more that 5000 reviews across all locations?
-SELECT company, location, review_count, avg(star_rating) as avg_star_rating
+SELECT company, avg(star_rating) as avg_star_rating
 FROM data_analyst_jobs
 WHERE review_count > 5000
-GROUP BY company, review_count, location;
---ANSWER: There are 83 companies with more than 5000 reviews across all locations.
+AND company IS NOT NULL
+GROUP BY company;
+--ANSWER: There are 40 companies with more than 5000 reviews across all locations.
 
 
 
 --10. Add the code to order the query in #9 from highest to lowest average star rating. Which company with more than 5000 reviews across all locations in the dataset has the highest star rating? What is that rating?
-SELECT company, location, review_count, avg(star_rating) as avg_star_rating
+SELECT company, avg(star_rating) as avg_star_rating
 FROM data_analyst_jobs
 WHERE review_count > 5000
-GROUP BY company, review_count, location
-ORDER BY avg_star_rating DESC
+GROUP BY company
+ORDER BY avg_star_rating DESC, company
 --ANSWER. General Motors from Michigan(MI) has the highest number of rating with an average of 4.1999998090000000.
 
 
@@ -108,3 +110,18 @@ FROM data_analyst_jobs
 WHERE title NOT ILIKE '%Analyst%' AND title NOT ILIKE '%Analytics%'
 --ANSWER: There are only 4 positions showing. The word that they have in common is Tableau.
 	
+	
+--bonus:
+SELECT domain, COUNT(title)
+FROM data_analyst_jobs
+WHERE skill ILIKE '%sql%'
+AND days_since_posting > (7*3)
+AND domain IS NOT NULL
+GROUP BY domain
+ORDER BY COUNT(title) DESC;
+
+
+
+
+
+
